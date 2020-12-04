@@ -49,6 +49,7 @@ def count_required_and_valid(filename):
         pid_m = pid_re.findall(entry)
 
         if( len(byr_m) and len(iyr_m) and len(eyr_m) and 
+            len(byr_m[0]) == 4 and len(iyr_m[0]) == 4 and len(eyr_m[0]) == 4 and 
             len(hgt_m) and len(hcl_m) and len(hcl_m[0]) == 6 and
             len(ecl_m) and len(pid_m) and len(pid_m[0]) == 9 and
             (1920 <= int(byr_m[0]) <= 2002) and
