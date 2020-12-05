@@ -6,7 +6,7 @@ def find_two_sum(filename,target):
     with open(filename) as f:
         values = {int(v) for v in f.readlines()}
 
-    for a in range(target+1):
+    for a in values:
         b = target-a
         if a in values and b in values:
             print(a*b)
@@ -16,10 +16,9 @@ def find_three_sum(filename,target):
     with open(filename) as f:
         values = {int(v) for v in f.readlines()}
 
-    for a in range(target+1):
-        for j in range(target-a+1):
-            b = target-a-j
-            c = j
+    for a in values:
+        for b in values:
+            c = target-a-b
             if a in values and b in values and c in values:
                 print(a*b*c)
                 return
