@@ -11,14 +11,12 @@ import itertools
 
 def get_seat(boarding_code):
     size = [8 >> 1,128 >> 1]
-    pos = ([0,7],[0,127])
+    pos = [0,0]
     for p,c in zip([1] * 7 + [0] * 3, boarding_code):
-        if c == 'F' or c == 'L':
-            pos[p][1] -= size[p]
-        else:
-            pos[p][0] += size[p]
+        if c == 'B' or c == 'R':
+            pos[p] += size[p]
         size[p] >>= 1
-    return pos[1][0]*8+pos[0][0]
+    return pos[1]*8+pos[0]
 
 def highest_seat_id(filename):
     highest = 0
