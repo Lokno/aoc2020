@@ -18,11 +18,11 @@ def count_everyone(filename):
     with open(filename) as fin:
         data_str = fin.read()
 
-    entries = data_str.split('\n\n')
+    entries = data_str.rstrip().split('\n\n')
 
     sum_unique = 0
     for e in entries:
-        party = [set(s) for s in e.rstrip().split('\n')]
+        party = [set(s) for s in e.split('\n')]
         party_intersection = party[0]
         for member in party[1:]:
             party_intersection = party_intersection.intersection(member)
