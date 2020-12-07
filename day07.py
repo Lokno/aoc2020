@@ -7,8 +7,6 @@ from queue import Queue
 line_re     = re.compile('(\w+) (\w+) bags contain (.*)')
 contents_re = re.compile('(\d+) (\w+) (\w+) bags?')
 
-can_contain_bright_yellow = ['']
-
 def read_bag_rules(filename):
     bags = {}
     with open(filename) as fin:
