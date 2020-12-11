@@ -93,7 +93,7 @@ def grid_sim_part2(filename):
     print(grid.count('#'))
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Solution to Advent of Code 2020 Day XX')
+    parser = argparse.ArgumentParser(description='Solution to Advent of Code 2020 Day 11')
     parser.add_argument('file', help='path to input file')
     parser.add_argument('--part', dest='part', type=int, default=1, choices=range(1, 3), 
                         help='select part (1) or part (2) solution')
