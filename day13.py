@@ -1,12 +1,9 @@
 import sys
 import argparse
 from pathlib import Path
-import re
 import math
 from operator import mul
 from functools import reduce
-
-line_re = re.compile('')
 
 def read_data(filename):
     data = {}

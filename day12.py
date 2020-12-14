@@ -1,9 +1,6 @@
 import sys
 import argparse
 from pathlib import Path
-import re
-
-line_re = re.compile('')
 
 def read_data(filename):
     with open(filename) as fin:
