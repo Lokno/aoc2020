@@ -38,6 +38,8 @@ def part1(filename):
 
     print(earliest_bus*(earliest_time-ntimestamp))
 
+# Needed help with this one. My original solution would not finish in time,
+# and was limited to cases where offset < id. 
 def part2(filename):
     data = read_data(filename)
 
