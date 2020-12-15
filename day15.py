@@ -21,14 +21,9 @@ def nth_spoken(filename,n):
         turn += 1
 
     while turn <= n:
-        if last in lh:
-            new = turn-1-lh[last]
-            lh[last] = turn-1
-            last = new
-        else:
-            lh[last] = turn-1
-            last = 0
-
+        hval = lh.get(last)
+        lh[last] = turn-1
+        last = 0 if hval is None else turn-1-hval
         turn += 1
 
     print(last)
