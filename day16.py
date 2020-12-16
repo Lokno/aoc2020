@@ -77,13 +77,13 @@ def determine_fields(filename):
             ps.intersection_update(set(valid_fields(ticket[i],data['fields'])))
 
         nps = fs.difference(ps)
-        possible.append([ps,nps])
+        possible.append(ps)
 
     fields = [None] * fc
 
     while None in fields:
 
-        for i,(ps,nps) in enumerate(possible):
+        for i,ps in enumerate(possible):
             if len(ps) == 1:
                 fields[i] = ps.pop()
 
@@ -93,9 +93,8 @@ def determine_fields(filename):
 
             for j in range(fc):
                 if i != j:
-                    if field in possible[j][0]:
-                        possible[j][0].remove(field)
-                    possible[j][1].add(field)
+                    if field in possible[j]:
+                        possible[j].remove(field)
 
     prod = 1
 
