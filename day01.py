@@ -1,6 +1,7 @@
 import sys
 import argparse
 from pathlib import Path
+import time
 
 def find_two_sum(filename,target):
     with open(filename) as f:
@@ -43,7 +44,10 @@ if __name__ == "__main__":
     elif not file_path.is_file():
         print("ERROR: Input path is not a file", file=sys.stderr)
     else:
+        start = time.time()
         if args.part == 1:
             find_two_sum(args.file,args.target)
         else:
             find_three_sum(args.file,args.target)
+        end = time.time()
+        print( "%f ms" % ((end-start)*1000))

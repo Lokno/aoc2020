@@ -3,6 +3,7 @@ import argparse
 from pathlib import Path
 import re
 from itertools import chain
+import time
 
 line_re = re.compile("([a-z ]+): ([0-9]+)-([0-9]+) or ([0-9]+)-([0-9]+)")
 
@@ -119,7 +120,10 @@ if __name__ == "__main__":
     elif not file_path.is_file():
         print("ERROR: Input path is not a file", file=sys.stderr)
     else:
+        start = time.time()
         if args.part == 1:
             sum_invalid_values(args.file)
         else:
             determine_fields(args.file)
+        end = time.time()
+        print( "%f ms" % ((end-start)*1000))

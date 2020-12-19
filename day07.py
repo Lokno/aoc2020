@@ -3,6 +3,7 @@ import argparse
 import re
 from pathlib import Path
 from queue import Queue
+import time
 
 line_re     = re.compile('(\w+) (\w+) bags contain (.*)')
 contents_re = re.compile('(\d+) (\w+) (\w+) bags?')
@@ -80,7 +81,10 @@ if __name__ == "__main__":
     elif not file_path.is_file():
         print("ERROR: Input path is not a file", file=sys.stderr)
     else:
+        start = time.time()
         if args.part == 1:
             count_bags_that_contain_target(args.file,'shiny gold')
         else:
             total_required_bags_in_bag(args.file,'shiny gold')
+        end = time.time()
+        print( "%f ms" % ((end-start)*1000))

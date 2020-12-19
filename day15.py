@@ -1,6 +1,7 @@
 import sys
 import argparse
 from pathlib import Path
+import time
 
 def read_sequence(filename):
     with open(filename) as fin:
@@ -43,7 +44,10 @@ if __name__ == "__main__":
     elif not file_path.is_file():
         print("ERROR: Input path is not a file", file=sys.stderr)
     else:
+        start = time.time()
         if args.part == 1:
             nth_spoken(args.file,2020)
         else:
             nth_spoken(args.file,30000000)
+        end = time.time()
+        print( "%f ms" % ((end-start)*1000))

@@ -3,6 +3,7 @@ import argparse
 from pathlib import Path
 import re
 from itertools import permutations
+import time
 
 mem_re = re.compile('mem\[([0-9]+)\] = ([0-9]+)')
 
@@ -85,7 +86,10 @@ if __name__ == "__main__":
     elif not file_path.is_file():
         print("ERROR: Input path is not a file", file=sys.stderr)
     else:
+        start = time.time()
         if args.part == 1:
             get_init_code(args.file)
         else:
             func(args.file)
+        end = time.time()
+        print( "%f ms" % ((end-start)*1000))

@@ -2,6 +2,7 @@ import sys
 import argparse
 from pathlib import Path
 from queue import Queue
+import time
 
 def read_values(filename):
     with open(filename) as fin:
@@ -100,7 +101,10 @@ if __name__ == "__main__":
     elif not file_path.is_file():
         print("ERROR: Input path is not a file", file=sys.stderr)
     else:
+        start = time.time()
         if args.part == 1:
             use_every_adapter(args.file)
         else:
             count_arrangements(args.file)
+        end = time.time()
+        print( "%f ms" % ((end-start)*1000))

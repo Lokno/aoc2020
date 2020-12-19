@@ -4,6 +4,7 @@ from pathlib import Path
 from itertools import chain,product
 from collections import deque
 import copy
+import time
 
 def read_grid(filename):
     data = {}
@@ -229,7 +230,10 @@ if __name__ == "__main__":
     elif not file_path.is_file():
         print("ERROR: Input path is not a file", file=sys.stderr)
     else:
+        start = time.time()
         if args.part == 1:
             conway3d(args.file,6)
         else:
             conway4d(args.file,6)
+        end = time.time()
+        print( "%f ms" % ((end-start)*1000))

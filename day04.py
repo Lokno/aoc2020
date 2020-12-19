@@ -2,6 +2,7 @@ import sys
 import argparse
 import re
 from pathlib import Path
+import time
 
 required_re = re.compile('(ecl|pid|eyr|hcl|byr|iyr|hgt)')
 
@@ -74,7 +75,10 @@ if __name__ == "__main__":
     elif not file_path.is_file():
         print("ERROR: Input path is not a file", file=sys.stderr)
     else:
+        start = time.time()
         if args.part == 1:
             count_required(args.file)
         else:
             count_required_and_valid(args.file)
+        end = time.time()
+        print( "%f ms" % ((end-start)*1000))

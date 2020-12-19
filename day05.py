@@ -2,6 +2,7 @@ import sys
 import argparse
 from pathlib import Path
 import itertools
+import time
 
 #     0123 4567
 # 0   xxxx xxxx
@@ -56,7 +57,10 @@ if __name__ == "__main__":
     elif not file_path.is_file():
         print("ERROR: Input path is not a file", file=sys.stderr)
     else:
+        start = time.time()
         if args.part == 1:
             highest_seat_id(args.file)
         else:
             find_unoccupied_seat(args.file)
+        end = time.time()
+        print( "%f ms" % ((end-start)*1000))

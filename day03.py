@@ -1,6 +1,7 @@
 import sys
 import argparse
 from pathlib import Path
+import time
 
 def count_trees(filename,slopes):
 
@@ -39,7 +40,10 @@ if __name__ == "__main__":
     elif not file_path.is_file():
         print("ERROR: Input path is not a file", file=sys.stderr)
     else:
+        start = time.time()
         if args.part == 1:
             count_trees(args.file,[(3,1)])
         else:
             count_trees(args.file,[(1,1),(3,1),(5,1),(7,1),(1,2)])
+        end = time.time()
+        print( "%f ms" % ((end-start)*1000))
