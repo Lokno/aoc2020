@@ -338,6 +338,25 @@ def add_to_sup_img( simg, tile_num, x, y, cwr, fwe, fns):
     simg['tiles'].add(tile_num)
     update_bounds(simg,x,y)
 
+def find_corners(data, edges):
+    corners = []
+    for tile_num,gd in data['tiles'].items():
+        uniques = []
+        for edge in gd['edges']:
+            matching = edges.get(edge['edge'])
+            if matching is None:
+                matching = edges.get(edge['edge'][::-1])
+
+            if matching is None:
+                print('this shouldn\'t happen')
+                uniques.append(edge['dir'])
+            elif len(matching) == 1 and matching[0]['tile_num'] == tile_num:
+                uniques.append(edge['dir'])
+        if len(uniques) > 1:
+            corners.append((tile_num,uniques))
+
+    return corners
+
 # 'grid' : trans_copy(gd['grid'],w,h,cwr,fwe,fns)
 # simg = {'grid' : '...', 'tile_num' : XXXX, 'transform' : (cwr_in, fwe_in, fns_in) }
 def stitch( data, edges, simg_in, tile_num_in, x_in, y_in, cwr_in, fwe_in, fns_in ):
@@ -404,13 +423,7 @@ def stitch( data, edges, simg_in, tile_num_in, x_in, y_in, cwr_in, fwe_in, fns_i
                                 could_place = True
                                 nodes.put( (copy.deepcopy(simg),match['tile_num'],nx,ny,cwr,fwe,fns) )
 
-
-def part1(filename):
-    data = read_grids(filename)
-    atile = next(iter(data['tiles'].values())) 
-    tw,th = atile['width'],atile['height']
-
-    # group all edges in a dict 
+def gather_edges( data ):
     edges = {}
     for tile_num,gd in data['tiles'].items():
         tile_edges = get_edge_vec(gd)
@@ -425,19 +438,46 @@ def part1(filename):
                     edges[redge].append(ed)
                 else:
                     edges[ed['edge']] = [ed]
+    return edges
 
-    
+def part1(filename):
+    data = read_grids(filename)
+    edges = gather_edges(data)
+    corners = find_corners(data, edges)
 
-    tile_num = 1427 #random.choices(list(data['tiles'].keys()))[0]
+    prod = 1
+    for tile_num,uniques in corners:
+        prod *= tile_num
 
-    print('Starting Tile: %d' % tile_num)
-
-    stitch(data,edges,{'min': (0,0), 'max': (0,0), 'tiles' : set()},tile_num,0,0,0,False,False)
+    print(prod)
 
 def part2(filename):
     data = read_grids(filename)
+    edges = gather_edges(data)
+    corners = find_corners(data, edges)
 
-    #print(data)
+    print(corners)
+    # Start with a corner
+
+    simgd = {'min': (0,0), 'max': (0,0), 'tiles' : set()}
+
+    for i,(tile_num,uniques) in enumerate(corners):
+        if i == 0:
+            continue
+
+        uniques.sort()
+
+        uni = ''.join(uniques)
+        print(uni)
+
+        # sw, en, nw, es
+        #add_to_sup_img( simg, tile_num, x, y, 0, 0, 0)
+
+
+    #tile_num = random.choices(corners)
+    #print('Starting Tile: %d' % tile_num)
+    #stitch(data,edges,,tile_num,0,0,0,False,False)
+
 
 end_program = False
 
