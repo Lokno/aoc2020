@@ -155,21 +155,22 @@ def print_sgrid( simg ):
 
     print(sstr)
 
-def print_image( data, simg, ss ):
-
+def build_image( data, simg, ss, border ):
     minx,miny = simg['min']
     maxx,maxy = simg['max']
 
-    s = data['size'] 
+    s = data['size']
+    sb = s
+
+    if border:
+        sb += 1
 
     sxn = (maxx-minx+1)
     syn = (maxy-miny+1)
 
-    sg = [' '] * sxn * syn * (s+1) * (s+1)
+    sg = [' '] * sxn * syn * sb * sb
 
-    print(len(sg))
-
-    print('\n'.join(wrap(''.join(sg), width=(sxn*(s+1)))))
+    print('\n'.join(wrap(''.join(sg), width=(sxn*sb))))
 
     for sx,sy in product(range(minx,maxx+1),range(miny,maxy+1)):
         if (sx,sy) in simg:
@@ -178,16 +179,33 @@ def print_image( data, simg, ss ):
             grid = gd['grid']
             #grid = trans_copy(gd['grid'], s, s, *simd['transform'])
             for x,y in product(range(s),range(s)):
-                xidx = (sx-minx)*(s+1)+x
-                yidx = (sy-miny)*(s+1)+y
+                xidx = (sx-minx)*sb+x
+                yidx = (sy-miny)*sb+y
 
-                sg[yidx*(s+1)*sxn+xidx] = grid[y*s+x]
+                sg[yidx*sb*sxn+xidx] = grid[y*s+x]
+
+    return sg
+
+def print_image( data, simg, ss, border ):
+    minx,miny = simg['min']
+    maxx,maxy = simg['max']
+
+    s = data['size']
+    sb = s
+
+    if border:
+        sb += 1
+
+    sxn = (maxx-minx+1)
+    syn = (maxy-miny+1)
+
+    sg = build_image( data, simg, ss, border )
 
     count = 0
-    for line in wrap(''.join(sg), width=(sxn*(s+1))):
+    for line in wrap(''.join(sg), width=(sxn*sb)):
         print(line)
         count += 1
-        if count > 0 and ( count % s == 0 ):
+        if border and count > 0 and ( count % s == 0 ):
             print('') 
         
 
@@ -206,7 +224,6 @@ def print_prod(simg,ss):
         if coord not in simg:
             print('WARNING: Corner %s Not In Super Image' % (str(coord)) )
         else:
-            print("Corner: %s %s" % (simg[coord]['tile_num'],str(coord)) )
             prod *= simg[coord]['tile_num']
 
     print(str(prod) + '\n')
@@ -370,8 +387,7 @@ def stitch( data, edges, simg_in, tile_num_in, x_in, y_in, cwr_in, fwe_in, fns_i
         simg, tile_num, x, y, cwr, fwe, fns = nodes.get()
 
         if end_program:
-            print(simg)
-            print_sgrid(simg)
+            print_image(data,simg,ss,True)
             sys.exit(-1)
 
         gd = data['tiles'][tile_num]
@@ -385,8 +401,7 @@ def stitch( data, edges, simg_in, tile_num_in, x_in, y_in, cwr_in, fwe_in, fns_i
         # if we made it here and we've hit the total tiles
         # then we've solved the super image
         if len(simg['tiles']) == data['total_tiles']:
-            print_image(data,simg,ss)
-            print_prod(simg,ss)
+            print_image(data,simg,ss,False)
             return True
 
         if most > len(simg['tiles']):
@@ -456,27 +471,14 @@ def part2(filename):
     edges = gather_edges(data)
     corners = find_corners(data, edges)
 
-    print(corners)
-    # Start with a corner
+    ss = data['super_size']
 
     simgd = {'min': (0,0), 'max': (0,0), 'tiles' : set()}
 
-    for i,(tile_num,uniques) in enumerate(corners):
-        if i == 0:
-            continue
-
-        uniques.sort()
-
-        uni = ''.join(uniques)
-        print(uni)
-
-        # sw, en, nw, es
-        #add_to_sup_img( simg, tile_num, x, y, 0, 0, 0)
-
-
-    #tile_num = random.choices(corners)
-    #print('Starting Tile: %d' % tile_num)
-    #stitch(data,edges,,tile_num,0,0,0,False,False)
+    corner = random.choices(corners)[0]
+    tile_num, borders = corner
+    print('Starting Tile: %d' % tile_num)
+    stitch(data,edges,simgd,tile_num,0,0,0,False,False)
 
 
 end_program = False
