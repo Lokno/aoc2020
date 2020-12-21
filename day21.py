@@ -38,22 +38,21 @@ def resolve_allergens(data):
                         change = True
                         wordsb.discard(w)
 
-    return d
+    return [(a,next(iter(i))) for a,i in d.items()]
 
 def part1(filename):
     data = read_lines(filename,hdl_regex)
 
-    resolve_allergens(data)
+    allergens = resolve_allergens(data)
 
     hypoallergenic = set()
 
     # Get set of non-allergic ingredients
     for entry in data:
         words = set(entry[0].split(' '))
-        for allergen,ingredients in d.items():
-            i = next(iter(ingredients))
-            if i in words:
-                words.remove(i)
+        for allergen,ingredient in allergens:
+            if ingredient in words:
+                words.remove(ingredient)
         hypoallergenic.update(words)
 
     total_count = 0
@@ -67,10 +66,9 @@ def part1(filename):
 def part2(filename):
     data = read_lines(filename,hdl_regex)
 
-    d = resolve_allergens(data)
+    allergens = resolve_allergens(data)
+    allergens.sort()
 
-    allergens = [(a,next(iter(i))) for a,i in d.items()]
-    allergens.sort(key=lambda x: x[0])
     print(','.join([i for a,i in allergens]))
 
 
