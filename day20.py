@@ -204,7 +204,7 @@ def count_matches( grid, gw, gh, temp, char, tw, th):
             matches += 1
     return matches
 
-def print_image( data, simg, ss, borders ):
+def print_image_with_stats( data, simg, ss, borders ):
     minx,miny = simg['min']
     maxx,maxy = simg['max']
 
@@ -343,7 +343,7 @@ def gather_corners(data, edges):
 
     return corners
 
-# Start with a corner piece in the bottom right
+# Start with a corner piece in the bottom left
 # For each open spot in a NSWE direction from a filled tiles
 # Find a valid tile that fits the edges at that position
 # Repeat until the entire super image is filled
@@ -391,7 +391,7 @@ def stitch( data, edges, simg, bl_tile_num, bl_x, bl_y, bl_cwr, bl_fwe, bl_fns )
             print("Could not fill all open spots")
             break
 
-    print_image(data,simg,ss,False)
+    print_image_with_stats(data,simg,ss,False)
 
 def gather_edges( data ):
     edges = {}
