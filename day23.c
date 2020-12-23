@@ -12,7 +12,6 @@ typedef struct llist
 {
     llnode* head;
     llnode* tail;
-    llnode* third;
     unsigned long long size;
 }llist;
 
@@ -21,7 +20,6 @@ llist* init()
     llist* tmp = (llist*)malloc(sizeof(llist));
     tmp->head = NULL;
     tmp->tail = NULL;
-    tmp->third = NULL;
     tmp->size = 0u;
     return tmp;
 }
@@ -35,20 +33,13 @@ llnode* push( llist* list, int val )
     {
         list->head = node;
         list->tail = list->head;
-        list->third = NULL;
         list->size = 1u;
     }
     else
     {
         list->tail->n = node;
         list->tail = node;
-
         list->size++;
-
-        if( list->size == 3u )
-        {
-            list->third=node;
-        }
     }
 
     return node;
@@ -60,19 +51,9 @@ llnode* remove_front3( llist* list )
     if( list && list->size > 3u )
     {
         tmp = list->head;
-        list->head = list->third->n;
-        list->third->n = NULL;
-        list->size -= 3u;
-
-        if( list->size >= 3 )
-        {
-            list->third=list->head->n->n;
-        }
-        else
-        {
-            list->third=NULL;
-        }
-        
+        list->head = list->head->n->n->n;
+        tmp->n->n->n = NULL;
+        list->size -= 3u;  
     }
 
     return tmp;
@@ -92,7 +73,6 @@ llnode* roll_lftn(llist* list, int n)
             list->tail = tmp;
             tmp->n = NULL;
         }
-        list->third=list->head->n->n;
     }
 }
 
@@ -107,7 +87,6 @@ llnode* roll_lft(llist* list)
         list->tail->n = tmp;
         list->tail = tmp;
         tmp->n = NULL;
-        list->third=list->head->n->n;
     }
 }
 
@@ -166,7 +145,6 @@ int insert_at_node(llist* list, llnode* node, llnode* chain)
     {
         ctail->n=node->n;
         node->n=chain;
-        list->third=list->head->n->n;
         list->size += 3u;
 
         if( list->tail == node )
@@ -193,7 +171,6 @@ int insert_at_val(llist* list, llnode* chain, int val)
     {
         ctail->n=tmp->n;
         tmp->n=chain;
-        list->third=list->head->n->n;
         list->size += 3u;
 
         if( list->tail == tmp )
@@ -251,19 +228,16 @@ void move( llist* list, int minv, int maxv, llnode** direct )
 {
     roll_lft(list);
 
-    llist pickup;
-    pickup.head = remove_front3(list);
-    pickup.tail = pickup.head->n->n;
-    pickup.size = 3;
+    llnode* pickup = remove_front3(list);
 
     int dst = mod(list->tail->v - 2,maxv)+1;
 
-    while( find(&pickup,dst) != NULL )
+    while( pickup->v == dst || pickup->n->v == dst || pickup->n->n->v == dst )
     {
         dst = mod(dst - 2,maxv)+1;
     }
 
-    insert_at_node(list,direct[dst-1],pickup.head);
+    insert_at_node(list,direct[dst-1],pickup);
 }
 
 llnode* direct[1000000];
