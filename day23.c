@@ -12,34 +12,54 @@ typedef struct llist
 {
     llnode* head;
     llnode* tail;
+    llnode* mem;
     unsigned long long size;
+    unsigned long long cap;
+    int own_mem;
 }llist;
 
-llist* init()
+llist* init(llnode* mem, unsigned long long cap)
 {
     llist* tmp = (llist*)malloc(sizeof(llist));
     tmp->head = NULL;
     tmp->tail = NULL;
+    tmp->mem = mem;
     tmp->size = 0u;
+    tmp->cap = cap;
+    tmp->own_mem = 0;
+
+    if( mem == NULL )
+    {
+        tmp->mem = (llnode*)calloc(cap,sizeof(llnode));
+        tmp->own_mem = 1;
+    }
+
     return tmp;
 }
 
 llnode* push( llist* list, int val )
 {
-    llnode* node = (llnode*)malloc(sizeof(llnode));
-    node->v = val;
-    node->n = NULL;
-    if( list->head == NULL )
+    llnode* node = NULL;
+
+    if( val <= 0 ) val = 1;
+    if( (unsigned long long)(val-1) < list->cap && list->mem[val-1].v == 0 )
     {
-        list->head = node;
-        list->tail = list->head;
-        list->size = 1u;
-    }
-    else
-    {
-        list->tail->n = node;
-        list->tail = node;
-        list->size++;
+        node = list->mem + (val-1u);
+
+        node->v = val;
+        node->n = NULL;
+        if( list->head == NULL )
+        {
+            list->head = node;
+            list->tail = list->head;
+            list->size = 1u;
+        }
+        else
+        {
+            list->tail->n = node;
+            list->tail = node;
+            list->size++;
+        }
     }
 
     return node;
@@ -59,23 +79,6 @@ llnode* remove_front3( llist* list )
     return tmp;
 }
 
-llnode* roll_lftn(llist* list, int n)
-{
-    llnode* tmp;
-
-    if( list && list->size > 2u )
-    {
-        for(int i = 0; i < n; ++i)
-        {
-            tmp = list->head;
-            list->head = list->head->n;
-            list->tail->n=tmp;
-            list->tail = tmp;
-            tmp->n = NULL;
-        }
-    }
-}
-
 llnode* roll_lft(llist* list)
 {
     llnode* tmp;
@@ -90,27 +93,6 @@ llnode* roll_lft(llist* list)
     }
 }
 
-llnode* find(llist* list, int n)
-{
-    llnode* tmp = list->head;
-    while( tmp != NULL && tmp->v != n )
-    {
-        tmp = tmp->n;
-    }
-    return tmp;
-}
-
-llnode* at(llist* list, unsigned long long n)
-{
-    unsigned long long i = 0;
-    llnode* tmp = list->head;
-    while( tmp != NULL && i < n )
-    {
-        tmp = tmp->n;
-    }
-    return tmp;
-}
-
 int max_val(llist* list)
 {
     int m = 0;
@@ -119,18 +101,6 @@ int max_val(llist* list)
     while( tmp != NULL )
     {
         if( tmp->v > m ) m = tmp->v;
-        tmp = tmp->n;
-    }
-    return m;
-}
-
-int min_val(llist* list)
-{
-    int m = 2147483647;
-    llnode* tmp = list->head;
-    while( tmp != NULL )
-    {
-        if( tmp->v < m ) m = tmp->v;
         tmp = tmp->n;
     }
     return m;
@@ -157,41 +127,9 @@ int insert_at_node(llist* list, llnode* node, llnode* chain)
     return 0;
 }
 
-int insert_at_val(llist* list, llnode* chain, int val)
-{
-    llnode* tmp = list->head;
-    llnode* ctail = chain;
-    while( ctail->n != NULL ) ctail=ctail->n;
-    while( tmp != NULL && tmp->v != val )
-    {
-        tmp=tmp->n;
-    }
-
-    if( tmp != NULL )
-    {
-        ctail->n=tmp->n;
-        tmp->n=chain;
-        list->size += 3u;
-
-        if( list->tail == tmp )
-        {
-            list->tail = ctail;
-        }
-
-        return 1;
-    }
-    return 0;
-}
-
 void delete(llist** list)
 { 
-    llnode* tmp = (*list)->head;
-    while( (*list)->head != NULL )
-    {
-        tmp = (*list)->head;
-        (*list)->head = (*list)->head->n;
-        free(tmp);
-    }
+    if( (*list)->own_mem ) free((*list)->mem);
     free(*list);
 }
 
@@ -218,29 +156,24 @@ void print_chain( llnode* node )
     printf("\n");
 }
 
-int mod(int x, int n)
-{
-    while( x < 0 ) x = n+x;
-    return x % n;
-}
-
-void move( llist* list, int minv, int maxv, llnode** direct )
+void move( llist* list, int maxv, llnode* mem )
 {
     roll_lft(list);
 
     llnode* pickup = remove_front3(list);
 
-    int dst = mod(list->tail->v - 2,maxv)+1;
-
-    while( pickup->v == dst || pickup->n->v == dst || pickup->n->n->v == dst )
+    int dst = (list->tail->v + (maxv - 2)) % (maxv) + 1;
+    while( pickup->v == dst || pickup->n->v == dst || pickup->n->n->v == dst ) 
     {
-        dst = mod(dst - 2,maxv)+1;
+        dst = (dst + (maxv - 2)) % (maxv) + 1;
     }
 
-    insert_at_node(list,direct[dst-1],pickup);
+    insert_at_node(list,mem+dst-1,pickup);
 }
 
-llnode* direct[1000000];
+#define NUM_CUPS 1000000
+
+llnode direct[NUM_CUPS];
 
 int main(int argc, char** argv)
 {
@@ -265,22 +198,21 @@ int main(int argc, char** argv)
     }
     else
     {
-        count = 1000000;
+        count = NUM_CUPS;
         steps = 10000000;
     }
 
-    list = init();
+    list = init(direct,NUM_CUPS);
 
     for( int i = 0; i < nums; ++i )
     {
         int input = argv[1][i]-48;
-        tmp = push(list,input);
-        direct[input-1] = tmp;
+        push(list,input);
     }
 
-    llnode* one = direct[0];
+    llnode* one = list->mem;
 
-    if( one == NULL )
+    if( one->v == 0u )
     {
         printf("ERR: The value '1' must appear in the input string\n");
         delete(&list);
@@ -288,31 +220,16 @@ int main(int argc, char** argv)
     } 
 
     int maxv = max_val(list);
-    int minv = min_val(list);
 
     int i = maxv;
-    while (i < count)
-    {
-        i++;
-        tmp = push(list,i);
-        direct[i-1] = tmp;
-    } 
+    while (i++ < count) push(list,i);
 
     maxv = count;
 
-    for( int i = 0; i < steps; ++i )
-    {
-        move(list,minv,maxv,direct);
-    }
+    while( steps-- > 0 ) move(list,maxv,list->mem);
 
-    if( part == 1 )
-    {
-        print_n_from(list,one->n,8);
-    }
-    else
-    {
-        printf("%lld\n", (long long)one->n->v * (long long)one->n->n->v );
-    }
+    if( part == 1 ) print_n_from(list,one->n,8);
+    else printf("%lld\n", (long long)one->n->v * (long long)one->n->n->v );
 
     delete(&list);
     
