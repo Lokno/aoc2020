@@ -1,36 +1,29 @@
 from lark import Lark
-from num2words import num2words
 from pathlib import Path
+import string
 import re
 import time
 import argparse
 
 def day20_Grammer( filename, part ):
-    rule_11_re = re.compile('(?<!_)eleven: .*\n')
-    rule_08_re = re.compile('(?<!_)eight: .*\n')
+    rule_11_re = re.compile('(?<!\d)11: .*\n')
+    rule_08_re = re.compile('(?<!\d)8: .*\n')
 
     with open(filename) as fin:
         file_str = fin.read()
 
     file_str,input_str = file_str.split('\n\n')
 
-    # create letter names
-    d = {}
-    for line in file_str.split('\n'):
-        num = int(line.split(':')[0])
-        d[num] = num2words(num).replace('-','_').replace(' ','_')
-
-    dict_list = list(d.items())
-    dict_list.sort(reverse=True, key = lambda x : x[0])
-
-    for idx,name in dict_list:
-        file_str = file_str.replace(str(idx),name)
-
-    file_str = 'start: %s\n\n' % d[0] + file_str
-
     if part == 2:
-        file_str = rule_11_re.sub('eleven: forty_two thirty_one | forty_two eleven thirty_one\n', file_str)
-        file_str = rule_08_re.sub('eight: forty_two | forty_two eight\n', file_str)
+        file_str = rule_11_re.sub('11: 42 31 | 42 11 31\n', file_str)
+        file_str = rule_08_re.sub('8: 42 | 42 8\n', file_str)
+
+    for c in string.digits:
+        file_str = file_str.replace(c,chr( ord(c)-ord('0')+ord('a') ))
+
+    file_str = 'start: a\n' + file_str
+
+    print(file_str)
 
     day19_rules = Lark(file_str)
 
