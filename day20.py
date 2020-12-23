@@ -247,7 +247,7 @@ def print_image_with_stats( data, simg, ss, borders ):
     count = 0
     for line in lines:
         count += 1
-        print(line)
+        print(line.replace('O','\033[31mO\033[0m'))
 
     print('\nSea Monsters:    %d' % most_sm )
     print("'#' Count:       %d" % hash_count)
