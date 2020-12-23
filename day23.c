@@ -275,6 +275,7 @@ int main(int argc, char** argv)
 
     if( argc != 3 )
     {
+        printf("Solution to Advent of Code 2020 Day 23\n");
         printf("  usage %s <sequence> <part>\n", argv[0]);
         exit(-1);
     }
