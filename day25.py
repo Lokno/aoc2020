@@ -2,8 +2,6 @@ import sys
 import argparse
 from pathlib import Path
 import time
-import signal
-import itertools
 
 def read_lines(filename):
     with open(filename) as fin:
@@ -25,15 +23,6 @@ def part1(filename):
 
 def part2(filename):
     print("There is no part 2")
-
-end_program = False
-
-def signal_handler(sig, frame):
-    global end_program
-    print('Aborting...')
-    end_program = True
-
-signal.signal(signal.SIGINT, signal_handler)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Solution to Advent of Code 2020 Day 25')
