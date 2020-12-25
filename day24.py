@@ -10,14 +10,6 @@ from itertools import product
 
 hex_re = re.compile('(ne|nw|se|sw|e|w)')
 
-def ne(a,b):
-    ep = 0.00000
-    ax,ay = a
-    bx,by = b
-    dx = abs(ax-bx)
-    dy = abs(ay-by)
-    return dx < ep and dy < ep
-
 def read_paths(filename):
     with open(filename) as fin:
         paths = [hex_re.findall(line) for line in fin]
@@ -97,15 +89,6 @@ def part2(filename,days):
         tiles = update_tiles(tiles,minc,maxc)
         
     print(list(tiles.values()).count(True))
-
-end_program = False
-
-def signal_handler(sig, frame):
-    global end_program
-    print('Aborting...')
-    end_program = True
-
-signal.signal(signal.SIGINT, signal_handler)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Solution to Advent of Code 2020 Day 24')
