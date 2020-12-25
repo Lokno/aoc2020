@@ -1,3 +1,5 @@
+# out-of-core implementation for Day 23 using cached lookup of every pre-computed answer
+
 import sys,string
 
 if len(sys.argv) < 3:
