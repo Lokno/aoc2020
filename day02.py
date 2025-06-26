@@ -8,7 +8,6 @@ line_re = re.compile("([0-9]+)-([0-9]+) ([a-z]): ([a-z]+)")
 
 def count_valid_part1(filename):
     count = 0
-
     with open(filename) as f:
         for line in f:
             m = line_re.match(line)
